@@ -1,0 +1,180 @@
+<UserControl x:Class="CashboxAnalyzer.Analytics.Views.AnalyticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:CashboxAnalyzer.Analytics.ViewModels"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             Background="#F8FAFC"
+             FontFamily="Segoe UI"
+             d:DataContext="{d:DesignInstance vm:AnalyticsViewModel, IsDesignTimeCreatable=False}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header & KPI -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Orientation="Horizontal">
+                <Border Background="White" CornerRadius="16" Padding="20" Width="240" Margin="0,0,20,0" BorderBrush="#E2E8F0" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="รายรับสะสม (เดือนนี้)" Foreground="#64748B" FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding YtdRevenue, StringFormat=C2}" Foreground="#2563EB" FontSize="26" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                    </Border.Effect>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="20" Width="240" Margin="0,0,20,0" BorderBrush="#E2E8F0" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="รายจ่ายสะสม (เดือนนี้)" Foreground="#64748B" FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding YtdExpense, StringFormat=C2}" Foreground="#EF4444" FontSize="26" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                    </Border.Effect>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="20" Width="240" BorderBrush="#E2E8F0" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="กำไรสุทธิ (เดือนนี้)" Foreground="#64748B" FontSize="14" FontWeight="Medium"/>
+                        <TextBlock Text="{Binding YtdProfit, StringFormat=C2}" Foreground="#10B981" FontSize="26" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                    </Border.Effect>
+                </Border>
+            </StackPanel>
+
+            <!-- Export Buttons -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="📊 Export Excel ทั้งหมด" Command="{Binding ExportExcelCommand}" Padding="20,10" Margin="5" Background="#10B981" Foreground="White" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="#10B981"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Date Filter -->
+        <Border Grid.Row="1" Background="White" CornerRadius="16" Padding="20" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="ดูข้อมูลตั้งแต่:" Foreground="#64748B" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <DatePicker SelectedDate="{Binding FilterFrom}" Width="150" Padding="5" FontSize="14" Foreground="#0F172A" Background="#F8FAFC" BorderBrush="#CBD5E1" Margin="0,0,15,0"/>
+                
+                <TextBlock Text="ถึง:" Foreground="#64748B" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <DatePicker SelectedDate="{Binding FilterTo}" Width="150" Padding="5" FontSize="14" Foreground="#0F172A" Background="#F8FAFC" BorderBrush="#CBD5E1" Margin="0,0,15,0"/>
+                
+                <Button Content="อัปเดตช่วงเวลา" Command="{Binding ApplyFilterCommand}" Padding="15,8" Background="#3B82F6" Foreground="White" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Charts Area -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Line Chart (Trend) -->
+            <Border Grid.Row="0" Grid.Column="0" Background="White" CornerRadius="16" Padding="20" Margin="0,0,20,20" BorderBrush="#E2E8F0" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="แนวโน้มกำไร/ขาดทุนสะสม" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,15"/>
+                    <lvc:CartesianChart Grid.Row="1" 
+                                        Series="{Binding ProfitTrendSeries}"
+                                        XAxes="{Binding ProfitTrendXAxes}"
+                                        YAxes="{Binding ProfitTrendYAxes}"
+                                        TooltipPosition="Top"
+                                        LegendPosition="Hidden"/>
+                </Grid>
+            </Border>
+
+            <!-- Pie Chart (Expense Proportion) -->
+            <Border Grid.Row="0" Grid.Column="1" Background="White" CornerRadius="16" Padding="20" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="สัดส่วนรายจ่าย" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,15"/>
+                    <lvc:PieChart Grid.Row="1" Series="{Binding CategorySeries}" LegendTextPaint="{Binding LegendTextPaint}"/>
+                </Grid>
+            </Border>
+
+            <!-- Monthly Comparison -->
+            <Border Grid.Row="1" Grid.Column="0" Background="White" CornerRadius="16" Padding="20" Margin="0,0,20,0" BorderBrush="#E2E8F0" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="เปรียบเทียบรายรับ-รายจ่าย รายวัน" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,15"/>
+                    <lvc:CartesianChart Grid.Row="1" Series="{Binding MonthlySeries}" XAxes="{Binding MonthXAxes}" YAxes="{Binding SharedYAxes}"/>
+                </Grid>
+            </Border>
+
+            <!-- Yearly Summary -->
+            <Border Grid.Row="1" Grid.Column="1" Background="White" CornerRadius="16" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.03" Color="#0F172A"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="สรุปรายเดือน" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,15"/>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding MonthlySummaries}" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="Transparent" BorderThickness="0" RowBackground="#F8FAFC" AlternatingRowBackground="White" HorizontalGridLinesBrush="#E2E8F0" VerticalGridLinesBrush="Transparent">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="เดือน" Binding="{Binding MonthLabel}" Width="*"/>
+                            <DataGridTextColumn Header="รายรับ" Binding="{Binding TotalRevenue, StringFormat=C2}" Width="*"/>
+                            <DataGridTextColumn Header="รายจ่าย" Binding="{Binding TotalExpense, StringFormat=C2}" Width="*"/>
+                            <DataGridTextColumn Header="กำไร" Binding="{Binding NetProfit, StringFormat=C2}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
