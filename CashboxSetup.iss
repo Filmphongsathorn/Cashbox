@@ -25,4 +25,5 @@ Name: "{group}\{cm:UninstallProgram,Cashbox Analyzer}"; Filename: "{uninstallexe
 Name: "{autodesktop}\Cashbox Analyzer"; Filename: "{app}\CashboxAnalyzer.exe"; Tasks: desktopicon
 
 [Run]
+Filename: "ie4uinit.exe"; Parameters: "-show"; Flags: runhidden waituntilterminated
 Filename: "{app}\CashboxAnalyzer.exe"; Description: "{cm:LaunchProgram,Cashbox Analyzer}"; Flags: nowait postinstall skipifsilent
