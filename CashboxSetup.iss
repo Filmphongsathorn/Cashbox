@@ -10,7 +10,7 @@ Compression=lzma2
 SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
-SetupIconFile=compiler:SetupClassicIcon.ico
+SetupIconFile=icon.ico
 UninstallDisplayIcon={app}\CashboxAnalyzer.exe
 
 [Tasks]
